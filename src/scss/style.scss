@@ -1,0 +1,24 @@
+@import "reset.scss";
+@import "fonts.scss";
+//@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+@import "variables.scss";
+@import "mixins.scss";
+
+body {
+	font-family: "Roboto", Trebuchet MS;
+	font-weight: 400;
+	height: auto;
+	overflow-x: hidden;
+	background-color: rgb(202, 202, 202);
+}
+
+.logo{
+	background-image: url("@img/webpack-logo.png");
+	background-size: cover;
+	width: 100px;
+	height: 100px;
+	margin: 0 auto
+}
+
+@import "common.scss";
+

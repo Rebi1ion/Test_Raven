@@ -1,0 +1,1 @@
+!function(){"use strict";var n=void 0;window.addEventListener("DOMContentLoaded",(function(){n.console.log(15)}))}();

@@ -1,0 +1,16 @@
+{
+	"extends": "eslint:recommended",
+	"parser": "@babel/eslint-parser",
+	"requireConfigFile": false,
+	"globals": {
+		"window": true,
+		"require": true,
+		"Symbol": true,
+		"__dirname": true,
+		"module": true,
+		"process": true
+	},
+	"rules": {
+		"no-console": "off"
+	}
+}
