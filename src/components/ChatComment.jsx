@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "@emotion/react";
-import { useDispatch} from "react-redux";
+import { useDispatch } from "react-redux";
 
 const ChatComment = (prop) => {
   const commentBlockStyle = css`
@@ -68,13 +68,12 @@ const ChatComment = (prop) => {
   const dispatch = useDispatch();
 
   const editMessage = () => {
-	 let editedMessage = prompt("Редактирование сообщения", prop.commentMessage);
-
+    let editedMessage = prompt("Редактирование сообщения", prop.commentMessage);
     dispatch({
       type: "EDIT_MESSAGE",
       payload: {
         key: +prop.idComment,
-        comment: editedMessage,
+        comment: editedMessage || prop.commentMessage,
       },
     });
   };
