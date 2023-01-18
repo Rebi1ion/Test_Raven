@@ -1,15 +1,18 @@
 import React from "react";
 import { css } from "@emotion/react";
+import { useDispatch} from "react-redux";
 
 const ChatComment = (prop) => {
-  const commentBlock = css`
+  const commentBlockStyle = css`
     min-height: 34px;
     width: 100%;
     display: flex;
     margin-bottom: 11px;
+    position: relative;
+    padding-right: 40px;
   `;
 
-  const commentImage = css`
+  const commentImageStyle = css`
     width: 34px;
     height: 34px;
     position: relative;
@@ -26,7 +29,7 @@ const ChatComment = (prop) => {
     }
   `;
 
-  const commentInfo = css`
+  const commentInfoStyle = css`
     display: flex;
     font-size: 0.75rem;
     margin-bottom: 2px;
@@ -37,9 +40,52 @@ const ChatComment = (prop) => {
     }
   `;
 
+  const commentControlStyle = css`
+    position: absolute;
+    right: 0;
+    top: 10px;
+    display: flex;
+  `;
+
+  const editButtonStyle = css`
+    font-size: 0.7rem;
+    background: inherit;
+    margin-right: 10px;
+    :hover {
+      text-decoration: underline;
+    }
+  `;
+
+  const deleteButtonStyle = css`
+    font-size: 0.7rem;
+    background: inherit;
+    color: red;
+    :hover {
+      text-decoration: underline;
+    }
+  `;
+
+  const dispatch = useDispatch();
+
+  const editMessage = () => {
+	 let editedMessage = prompt("Редактирование сообщения", prop.commentMessage);
+
+    dispatch({
+      type: "EDIT_MESSAGE",
+      payload: {
+        key: +prop.idComment,
+        comment: editedMessage,
+      },
+    });
+  };
+
+  const deleteMessage = () => {
+    dispatch({ type: "DELETE_MESSAGE", payload: +prop.idComment });
+  };
+
   return (
-    <section css={commentBlock}>
-      <div css={commentImage}>
+    <section css={commentBlockStyle}>
+      <div css={commentImageStyle}>
         <img src={prop.userAvatar} alt="avatar" />
       </div>
       <div
@@ -47,11 +93,19 @@ const ChatComment = (prop) => {
           font-size: 0.8125rem;
         `}
       >
-        <div css={commentInfo}>
+        <div css={commentInfoStyle}>
           <h2>{prop.username}</h2>
           <h3>{prop.commentTime}</h3>
         </div>
         <p>{prop.commentMessage}</p>
+      </div>
+      <div css={commentControlStyle}>
+        <button css={editButtonStyle} onClick={editMessage}>
+          edit
+        </button>
+        <button css={deleteButtonStyle} onClick={deleteMessage}>
+          delete
+        </button>
       </div>
     </section>
   );

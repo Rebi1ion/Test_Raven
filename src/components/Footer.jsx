@@ -1,6 +1,7 @@
 import React from "react";
 import { css } from "@emotion/react";
 // import styled from "@emotion/styled";
+import { useDispatch, useSelector } from "react-redux";
 
 import attach from "../assets/images/attach-icon.svg";
 import microphone from "../assets/images/microphone-icon.svg";
@@ -18,12 +19,37 @@ export default function Footer(prop) {
   const messageForm = css`
     margin-right: 20px;
     flex-grow: 1;
+    display: flex;
     textarea {
       width: 100%;
       resize: none;
       height: 15px;
+      margin-right: 20px;
     }
   `;
+
+  const dispatch = useDispatch();
+  const message = useSelector((state) => state);
+
+
+
+  const addMessage = (event) => {
+    let lastKey = Object.keys(message);
+    lastKey = lastKey.length !== 0 ? +lastKey[lastKey.length - 1] + 1 : 0;
+    let currentDate = new Date();
+    let time = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+
+    event.preventDefault();
+    let textArea = event.target[0];
+    let comment = textArea.value;
+    if (comment) {
+      textArea.value = "";
+      dispatch({
+        type: "ADD_MESSAGE",
+        payload: { key: lastKey, commentTime: time, comment: comment },
+      });
+    }
+  };
 
   return (
     <footer css={footerStyle}>
@@ -43,12 +69,24 @@ export default function Footer(prop) {
       >
         <img src={microphone} alt="microphone" />
       </button>
-      <form action="post" css={messageForm}>
+
+      <form action="post" css={messageForm} onSubmit={addMessage}>
         <textarea
           type="text"
           placeholder={`Message in ` + prop.chatName}
         ></textarea>
+
+        <button
+          submit="true"
+          css={css`
+            background: inherit;
+          `}
+          //  onClick={() => addMessage()}
+        >
+          Отправить
+        </button>
       </form>
+
       <button
         css={css`
           background: inherit;

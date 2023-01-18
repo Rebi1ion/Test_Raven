@@ -1,11 +1,12 @@
 import React from "react";
 import { css } from "@emotion/react";
 // import styled from "@emotion/styled";
+import { useSelector } from "react-redux";
 
 import ChatComment from "./ChatComment";
 
 import avatar from "../assets/images/user-avatar.jpg";
-import ChatData from "./ChatData";
+// import ChatData from "./ChatData";
 
 const MainChat = () => {
   const MainStyle = css`
@@ -14,9 +15,30 @@ const MainChat = () => {
     overflow-y: auto;
   `;
 
+  const messages = useSelector((state) => state);
+  let messageArray = [];
+
+  const showMessages = (messagesObj) => {
+    for (let idMessage in messagesObj) {
+      messageArray.push(
+        <ChatComment
+          userAvatar={avatar}
+          username={messagesObj[idMessage].username}
+          commentTime={messagesObj[idMessage].messageTime}
+          commentMessage={messagesObj[idMessage].messageText}
+          idComment={idMessage}
+          key={idMessage}
+        />
+      );
+    }
+  };
+  showMessages(messages);
+
   return (
     <main css={MainStyle}>
-      <ChatComment
+      {messageArray}
+
+      {/* <ChatComment
         userAvatar={avatar}
         username={"Jeshua Stout"}
         commentTime={"6:38 PM"}
@@ -56,7 +78,7 @@ const MainChat = () => {
         commentMessage={
           "@aa_da What's the reason for the van? Saving money or just like to get outside? If you've got a stable source of income you could always do some short term Airbnbs + buy a truck/topper, build a platform in the back. That way you can always convert it back to a truck and sleep in an apartment if you want."
         }
-      />
+      /> */}
     </main>
   );
 };

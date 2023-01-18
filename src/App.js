@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Global, css } from "@emotion/react";
 // import styled from "@emotion/styled";
 import emotionReset from "emotion-reset";
