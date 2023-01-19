@@ -1,7 +1,8 @@
 import React from "react";
 import { Global, css } from "@emotion/react";
-// import styled from "@emotion/styled";
+import styled from "@emotion/styled";
 import emotionReset from "emotion-reset";
+import { useFriendStatus } from "./hooks/useFriendStatus";
 
 import NavigationChats from "./components/NavigationChats";
 import NavigationFriends from "./components/NavigationFriends";
@@ -9,12 +10,12 @@ import Chat from "./components/Chat";
 import Profile from "./components/Profile";
 
 function App() {
-  const appClass = css`
+  const AppClass = styled.div`
     width: 100vw;
     height: 100vh;
     font-family: "Lato", sans-serif;
-	 display: flex;
-	 overflow-x: hidden; 
+    display: flex;
+    overflow-x: hidden;
   `;
 
   const minify = css`
@@ -93,15 +94,14 @@ function App() {
   `;
 
   return (
-    <div css={appClass}>
+    <AppClass>
       <Global styles={minify} />
 
       <NavigationChats />
-		<NavigationFriends />
-		<Chat/>
-		<Profile/>
-
-    </div>
+      <NavigationFriends />
+      <Chat />
+      <Profile />
+    </AppClass>
   );
 }
 

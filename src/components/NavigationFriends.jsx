@@ -1,18 +1,15 @@
 import React from "react";
-import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 
 const NavigationFriends = () => {
-  const navFriendsStyle = css`
+  const NavFriendsStyle = styled.nav`
     height: 100%;
-	 width: 261px;
+    width: 261px;
     background: #25272a;
     opacity: 0.75;
   `;
 
-  return <nav css={navFriendsStyle}>
-
-  </nav>;
+  return <NavFriendsStyle></NavFriendsStyle>;
 };
 
 export default NavigationFriends;

@@ -1,20 +1,14 @@
-import React from 'react';
-import { css } from "@emotion/react";
+import React from "react";
 import styled from "@emotion/styled";
 
 const Profile = () => {
-
-	const profileStyle = css`
+  const ProfileStyle = styled.nav`
     background: #ddd;
     opacity: 0.8;
-	 height: 100%;
-	 width: 200px;
+    height: 100%;
+    width: 200px;
   `;
-	return (
-		<nav css={profileStyle}>
-			
-		</nav>
-	);
-}
+  return <ProfileStyle></ProfileStyle>;
+};
 
 export default Profile;

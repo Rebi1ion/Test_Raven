@@ -1,6 +1,5 @@
-import React from "react";
-import { css } from "@emotion/react";
-// import styled from "@emotion/styled";
+import React, { useCallback, useEffect } from "react";
+import styled from "@emotion/styled";
 import { useDispatch, useSelector } from "react-redux";
 
 import attach from "../assets/images/attach-icon.svg";
@@ -8,92 +7,102 @@ import microphone from "../assets/images/microphone-icon.svg";
 import smile from "../assets/images/smile-icon.svg";
 
 export default function Footer(prop) {
-  const footerStyle = css`
-    padding: 0 22px;
-    height: 72px;
-    border-top: 0.5px solid rgba(0, 0, 0, 0.24);
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-  `;
-  const messageForm = css`
-    margin-right: 20px;
-    flex-grow: 1;
-    display: flex;
-    textarea {
-      width: 100%;
-      resize: none;
-      height: 15px;
-      margin-right: 20px;
-    }
-  `;
-
   const dispatch = useDispatch();
-  const message = useSelector((state) => state);
+  const messages = useSelector((state) => state);
 
-
-
-  const addMessage = (event) => {
-    let lastKey = Object.keys(message);
-    lastKey = lastKey.length !== 0 ? +lastKey[lastKey.length - 1] + 1 : 0;
+  const setTime = useCallback(() => {
     let currentDate = new Date();
-    let time = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+    let hours = currentDate.getHours();
+    let minutes = `${currentDate.getMinutes()}`;
+    return `${hours}:${minutes.length > 1 ? minutes : `0${minutes}`}`;
+  }, []);
 
-    event.preventDefault();
-    let textArea = event.target[0];
-    let comment = textArea.value;
-    if (comment) {
-      textArea.value = "";
-      dispatch({
-        type: "ADD_MESSAGE",
-        payload: { key: lastKey, commentTime: time, comment: comment },
-      });
+  const addMessage = useCallback(
+    (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        let comment = event.target.value;
+        let messageKey = event.target.messageKey;
+        let time = setTime();
+        event.target.value = "";
+        event.target.messageKey = "";
+        dispatch({
+          type: "ADD_MESSAGE",
+          payload: { commentTime: time, comment: comment, key: messageKey },
+        });
+      }
+    },
+    [dispatch, setTime]
+  );
+
+  useEffect(() => {
+    let messageKey;
+    let stateForEdit = messages.filter((obj, index) => {
+      if (obj.currentMessageEdit) {
+        messageKey = index;
+        return obj.currentMessageEdit;
+      }
+      return null;
+    })[0];
+    if (stateForEdit) {
+      let commentTextarea = document.querySelector(".commentTextarea");
+      commentTextarea.value = stateForEdit.currentMessageEdit;
+      commentTextarea.messageKey = messageKey;
     }
-  };
+  }, [messages]);
 
   return (
-    <footer css={footerStyle}>
-      <button
-        css={css`
-          margin-right: 20px;
-          background: inherit;
-        `}
-      >
+    <FooterStyle>
+      <FooterButton>
         <img src={attach} alt="attach" />
-      </button>
-      <button
-        css={css`
-          margin-right: 21px;
-          background: inherit;
-        `}
-      >
+      </FooterButton>
+      <FooterButton>
         <img src={microphone} alt="microphone" />
-      </button>
+      </FooterButton>
 
-      <form action="post" css={messageForm} onSubmit={addMessage}>
+      <MessageForm action="post" onKeyUp={addMessage}>
         <textarea
+          className="commentTextarea"
           type="text"
           placeholder={`Message in ` + prop.chatName}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) e.preventDefault();
+          }}
         ></textarea>
+      </MessageForm>
 
-        <button
-          submit="true"
-          css={css`
-            background: inherit;
-          `}
-          //  onClick={() => addMessage()}
-        >
-          Отправить
-        </button>
-      </form>
-
-      <button
-        css={css`
-          background: inherit;
-        `}
-      >
+      <FooterSmileButton>
         <img src={smile} alt="smile" />
-      </button>
-    </footer>
+      </FooterSmileButton>
+    </FooterStyle>
   );
 }
+
+const FooterStyle = styled.footer`
+  padding: 0 22px;
+  height: 72px;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.24);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+`;
+
+const MessageForm = styled.form`
+  margin-right: 20px;
+  flex-grow: 1;
+  display: flex;
+  textarea {
+    width: 100%;
+    resize: none;
+    height: 15px;
+    margin-right: 20px;
+  }
+`;
+
+const FooterButton = styled.button`
+  margin-right: 21px;
+  background: inherit;
+`;
+
+const FooterSmileButton = styled(FooterButton)`
+  margin-right: 0;
+`;
