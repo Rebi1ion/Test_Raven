@@ -7,6 +7,14 @@ import { useCallback } from "react";
 const ChatComment = (prop) => {
   const dispatch = useDispatch();
 
+  const openProfile = () => {
+    dispatch({
+      type: "OPEN_PROFILE",
+		payload: {
+		}
+    });
+  };
+
   const editMessage = () => {
     dispatch({
       type: "EDIT_MESSAGE",
@@ -23,7 +31,7 @@ const ChatComment = (prop) => {
 
   return (
     <CommentBlockStyle>
-      <CommentImageStyle>
+      <CommentImageStyle onClick={openProfile}>
         <img src={prop.userAvatar} alt="avatar" />
       </CommentImageStyle>
       <div
@@ -33,7 +41,9 @@ const ChatComment = (prop) => {
         `}
       >
         <CommentInfoStyle>
-          <h2>{prop.username}</h2>
+          <h2 style={{ cursor: "pointer" }} onClick={openProfile}>
+            {prop.username}
+          </h2>
           <h3>{prop.commentTime}</h3>
         </CommentInfoStyle>
         <p>{prop.commentMessage}</p>
@@ -50,7 +60,6 @@ export default ChatComment;
 
 const CommentBlockStyle = styled.section`
   min-height: 34px;
-  max-width: 1000px;
   display: flex;
   margin-bottom: 15px;
   position: relative;
@@ -65,6 +74,7 @@ const CommentImageStyle = styled.div`
   overflow: hidden;
   margin-right: 11px;
   flex-shrink: 0;
+  cursor: pointer;
   img {
     width: 100%;
     height: 100%;

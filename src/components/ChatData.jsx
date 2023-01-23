@@ -13,7 +13,7 @@ const ChatData = (prop) => {
 
 export default ChatData;
 
-const DataLine = styled.section`
+const DataLine = styled.div`
   display: flex;
   padding: 0px 0 13px;
   align-items: center;

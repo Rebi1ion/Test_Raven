@@ -8,13 +8,21 @@ import smile from "../assets/images/smile-icon.svg";
 
 export default function Footer(prop) {
   const dispatch = useDispatch();
-  const messages = useSelector((state) => state);
+  const messages = useSelector((state) => state.message);
 
   const setTime = useCallback(() => {
     let currentDate = new Date();
-    let hours = currentDate.getHours();
+    let hours = `${currentDate.getHours()}`;
     let minutes = `${currentDate.getMinutes()}`;
-    return `${hours}:${minutes.length > 1 ? minutes : `0${minutes}`}`;
+    return checkDateLength(hours, minutes).join(":");
+  }, []);
+
+  const setDate = useCallback(() => {
+    let currentDate = new Date();
+    let day = `${currentDate.getDate()}`;
+    let month = `${currentDate.getMonth() + 1}`;
+    let year = `${currentDate.getFullYear()}`;
+    return checkDateLength(day, month, year);
   }, []);
 
   const addMessage = useCallback(
@@ -23,15 +31,21 @@ export default function Footer(prop) {
         let comment = event.target.value;
         let messageKey = event.target.messageKey;
         let time = setTime();
+        let date = setDate();
         event.target.value = "";
         event.target.messageKey = "";
         dispatch({
           type: "ADD_MESSAGE",
-          payload: { commentTime: time, comment: comment, key: messageKey },
+          payload: {
+            messageDate: date,
+            commentTime: time,
+            comment: comment,
+            key: messageKey,
+          },
         });
       }
     },
-    [dispatch, setTime]
+    [dispatch, setTime, setDate]
   );
 
   useEffect(() => {
@@ -75,6 +89,10 @@ export default function Footer(prop) {
       </FooterSmileButton>
     </FooterStyle>
   );
+}
+
+function checkDateLength(...args) {
+  return args.map((item) => (item.length === 1 ? `0${item}` : item));
 }
 
 const FooterStyle = styled.footer`
