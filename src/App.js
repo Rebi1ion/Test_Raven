@@ -2,8 +2,7 @@ import React from "react";
 import { Global, css } from "@emotion/react";
 import styled from "@emotion/styled";
 import emotionReset from "emotion-reset";
-import { useFriendStatus } from "./hooks/useFriendStatus";
-
+// import { useFriendStatus } from "./hooks/useFriendStatus";
 
 import NavigationChats from "./components/NavigationChats";
 import NavigationFriends from "./components/NavigationFriends";
@@ -12,13 +11,13 @@ import Profile from "./components/Profile";
 
 function App() {
   return (
-      <AppClass>
-        <Global styles={minify} />
-        <NavigationChats />
-        <NavigationFriends />
-        <Chat />
-        <Profile />
-      </AppClass>
+    <AppClass>
+      <Global styles={minify} />
+      <NavigationChats />
+      <NavigationFriends />
+      <Chat />
+      <Profile />
+    </AppClass>
   );
 }
 

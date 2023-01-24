@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { useDispatch, useSelector } from "react-redux";
+import users from "../states/userState";
 
 import avatar from "../assets/images/user-avatar.jpg";
 import facebookImg from "../assets/images/facebook-icon.svg";
@@ -8,12 +9,18 @@ import twitterImg from "../assets/images/twitter-icon.svg";
 import instagramImg from "../assets/images/instagram-icon.svg";
 import loseProfileImg from "../assets/images/close-profile-icon.svg";
 
-import { OnlineStatus } from "./GlobalElements";
+import { checkOnline } from "./GlobalElements";
+import { useMemo } from "react";
 
 const Profile = (prop) => {
   const profile = useSelector((state) => state.profile);
-  const dispatch = useDispatch();
+  let checkedUser = useMemo(() => users[profile.id], [profile.id]);
+  const OnlineStatus = useMemo(
+    () => checkOnline(checkedUser?.isOnline),
+    [checkedUser]
+  );
 
+  const dispatch = useDispatch();
   const closeProfile = () => {
     dispatch({
       type: "CLOSE_PROFILE",
@@ -29,19 +36,19 @@ const Profile = (prop) => {
       </Image>
       <Content>
         <Name>
-          <h2>Joshua</h2>
+          <h2>{checkedUser.username}</h2>
           <OnlineStatus></OnlineStatus>
         </Name>
-        <Description>UI Designer</Description>
+        <Description>{checkedUser.status}</Description>
 
         <Links>
-          <a href="https://facebook.com">
+          <a href={checkedUser.socialLinks.facebook}>
             <img src={facebookImg} alt="" />
           </a>
-          <a href="https://twitter.com">
+          <a href={checkedUser.socialLinks.twitter}>
             <img src={twitterImg} alt="" />
           </a>
-          <a href="https://instagram.com">
+          <a href={checkedUser.socialLinks.instagram}>
             <img src={instagramImg} alt="" />
           </a>
         </Links>
@@ -52,15 +59,15 @@ const Profile = (prop) => {
         <ProfileInfo>
           <li>
             Username
-            <p>@amilia_lu</p>
+            <p>{checkedUser.link}</p>
           </li>
           <li>
             Email
-            <p>a-luna@gmail.com</p>
+            <p>{checkedUser.email}</p>
           </li>
           <li>
             Skype
-            <p>amiluna</p>
+            <p>{checkedUser.skype}</p>
           </li>
         </ProfileInfo>
       </Content>

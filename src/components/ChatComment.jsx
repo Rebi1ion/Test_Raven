@@ -11,6 +11,7 @@ const ChatComment = (prop) => {
     dispatch({
       type: "OPEN_PROFILE",
 		payload: {
+			id: prop.userId
 		}
     });
   };

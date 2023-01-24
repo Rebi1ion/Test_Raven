@@ -6,6 +6,7 @@ import { combineReducers } from "redux";
 import { configureStore } from "@reduxjs/toolkit";
 import messageStore from "./reducers/chatReducer";
 import profileStore from "./reducers/profileReducer";
+import { BrowserRouter } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -18,6 +19,8 @@ const store = configureStore({ reducer: rootReducers });
 
 root.render(
   <Provider store={store}>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </Provider>
 );

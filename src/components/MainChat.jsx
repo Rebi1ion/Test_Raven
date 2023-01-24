@@ -24,6 +24,7 @@ const MainChat = () => {
             <ChatData data={object.messageDate.join("/")} />
           ) : null}
           <ChatComment
+            userId={object.userId}
             userAvatar={avatar}
             username={object.username}
             commentTime={object.messageTime}

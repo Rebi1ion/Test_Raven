@@ -1,4 +1,5 @@
 import { chatState } from "../states/chatState";
+import { userState } from "../states/userState";
 
 
 const chatReducer = (state = chatState, action) => {
@@ -7,7 +8,7 @@ const chatReducer = (state = chatState, action) => {
     case "ADD_MESSAGE":
       if (!payloadValue.key && payloadValue.key !== 0) {
         return state.concat({
-          userId: state.length + 1,
+          userId: 3,
           username: "user",
           messageTime: payloadValue.commentTime,
 			 messageDate: payloadValue.messageDate,
