@@ -4,15 +4,18 @@ import App from "./App";
 import { Provider } from "react-redux";
 import { combineReducers } from "redux";
 import { configureStore } from "@reduxjs/toolkit";
-import messageStore from "./reducers/chatReducer";
-import profileStore from "./reducers/profileReducer";
+import messageReducer from "./reducers/chatReducer";
+import profileReducer from "./reducers/profileReducer";
+import chatUsersReducer from "./reducers/chatUsersReducers";
+
 import { BrowserRouter } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const rootReducers = combineReducers({
-  message: messageStore,
-  profile: profileStore,
+  message: messageReducer,
+  profile: profileReducer,
+  chatUsers: chatUsersReducer,
 });
 
 const store = configureStore({ reducer: rootReducers });

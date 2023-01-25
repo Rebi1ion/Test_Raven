@@ -2,6 +2,7 @@ import React from "react";
 import { Global, css } from "@emotion/react";
 import styled from "@emotion/styled";
 import emotionReset from "emotion-reset";
+import { Routes, Route } from "react-router-dom";
 // import { useFriendStatus } from "./hooks/useFriendStatus";
 
 import NavigationChats from "./components/NavigationChats";
@@ -15,7 +16,9 @@ function App() {
       <Global styles={minify} />
       <NavigationChats />
       <NavigationFriends />
-      <Chat />
+      <Routes>
+        <Route path="/" element={<Chat />}></Route>
+      </Routes>
       <Profile />
     </AppClass>
   );

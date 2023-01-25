@@ -1,6 +1,4 @@
 import { chatState } from "../states/chatState";
-import { userState } from "../states/userState";
-
 
 const chatReducer = (state = chatState, action) => {
   let payloadValue = action.payload;

@@ -35,6 +35,16 @@ let users = {
     email: "qwerty123@gmail.com",
     skype: "qwertyqwerty",
   },
+  4: {
+    username: "qwerty",
+    avatar: `${pathToImages}/user-avatar.jpg`,
+    isOnline: true,
+    status: "Back",
+    link: "@qwerty754",
+    socialLinks: ["face", "twit", "inst"],
+    email: "qwerty23123@gmail.com",
+    skype: "qwerty_qwerty",
+  },
 };
 
 export default users;

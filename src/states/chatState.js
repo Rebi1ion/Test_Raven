@@ -1,5 +1,3 @@
-import users from "./userState.js";
-
 let chatState = [
   {
     userId: 1,
