@@ -1,6 +1,10 @@
 import React from "react";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
+import { useMenuContext } from "../providers/MenuModalProvider";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+
 import unfavorite from "../assets/images/unfavorite.svg";
 import favorite from "../assets/images/favorite.png";
 import people from "../assets/images/people.svg";
@@ -9,6 +13,19 @@ import bell from "../assets/images/bell-icon.svg";
 import menu from "../assets/images/menu-icon.svg";
 
 export default function Header(props) {
+  const { openMenu, closeMenu } = useMenuContext();
+  const dispatch = useDispatch();
+  const { chatId } = useLocation().state || { chatId: 0 };
+  
+  const toggleFavorite = () =>
+    dispatch({
+      type: "TOGGLE_FAVORITE",
+      payload: {
+        channelId: chatId,
+        isFavorite: !props.isFavorite,
+      },
+    });
+
   let Notification = styled.button`
     background-color: inherit;
     margin-right: 20px;
@@ -33,8 +50,8 @@ export default function Header(props) {
   return (
     <HeaderStyle>
       <ChatTitle>
-        {props.title}
-        <ChatFavorite>
+        #{props.title}
+        <ChatFavorite onClick={toggleFavorite}>
           <img src={props.isFavorite ? favorite : unfavorite} alt="favorite" />
         </ChatFavorite>
       </ChatTitle>
@@ -48,19 +65,19 @@ export default function Header(props) {
           <span>{props.chatMembers}</span>
         </PeopleCount>
 
-        <SearchForm action="" method="get">
+        <SearchForm onClick={closeMenu} action="" method="get">
           <input type="text" placeholder="Search..." />
           <button submit="true">
             <img src={search} alt="search" />
           </button>
         </SearchForm>
 
-        <Notification>
+        <Notification onClick={closeMenu}>
           <img src={bell} alt="bell" />
           <span></span>
         </Notification>
 
-        <MenuIcon>
+        <MenuIcon onClick={openMenu}>
           <img src={menu} alt="menu" />
         </MenuIcon>
       </div>

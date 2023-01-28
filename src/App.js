@@ -2,31 +2,38 @@ import React from "react";
 import { Global, css } from "@emotion/react";
 import styled from "@emotion/styled";
 import emotionReset from "emotion-reset";
-import { Routes, Route } from "react-router-dom";
-// import { useFriendStatus } from "./hooks/useFriendStatus";
+import { Routes, Route, useLocation } from "react-router-dom";
+import MenuModalProvider from "./providers/MenuModalProvider";
 
 import NavigationChats from "./components/NavigationChats";
 import NavigationFriends from "./components/NavigationFriends";
 import Chat from "./components/Chat";
 import Profile from "./components/Profile";
+import ChatPanel from "./components/ChatPanel";
+import AddChatPanel from "./components/AddChatPanel";
 
 function App() {
+  const { chatId } = useLocation().state || { chatId: 0 };
   return (
-    <AppClass>
-      <Global styles={minify} />
-      <NavigationChats />
-      <NavigationFriends />
-      <Routes>
-        <Route path="/" element={<Chat />}></Route>
-      </Routes>
-      <Profile />
-    </AppClass>
+    <MenuModalProvider>
+      <AppClass>
+        <Global styles={minify} />
+        <NavigationChats />
+        <NavigationFriends />
+        <Routes>
+          <Route path="/" element={<Chat chatId={chatId} />}></Route>
+          <Route path="/admin-panel" element={<ChatPanel />}></Route>
+          <Route path="/add-chat-panel" element={<AddChatPanel />}></Route>
+        </Routes>
+        <Profile />
+      </AppClass>
+    </MenuModalProvider>
   );
 }
 
 const AppClass = styled.div`
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   font-family: "Lato", sans-serif;
   display: flex;
   overflow-x: hidden;

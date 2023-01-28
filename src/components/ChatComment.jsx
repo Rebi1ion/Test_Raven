@@ -3,18 +3,20 @@ import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { useDispatch } from "react-redux";
 import { useCallback } from "react";
+import { useLocation } from "react-router-dom";
 
 const ChatComment = (prop) => {
   const dispatch = useDispatch();
+  let { chatId } = useLocation().state || 0;
 
-  const openProfile = () => {
+  const openProfile = useCallback(() => {
     dispatch({
       type: "OPEN_PROFILE",
-		payload: {
-			id: prop.userId
-		}
+      payload: {
+        id: prop.userId,
+      },
     });
-  };
+  }, [dispatch, prop.userId]);
 
   const editMessage = () => {
     dispatch({
@@ -22,13 +24,20 @@ const ChatComment = (prop) => {
       payload: {
         key: +prop.idComment,
         comment: prop.commentMessage,
+        chatId: chatId,
       },
     });
   };
 
   const deleteMessage = useCallback(() => {
-    dispatch({ type: "DELETE_MESSAGE", payload: +prop.idComment });
-  }, [dispatch, prop.idComment]);
+    dispatch({
+      type: "DELETE_MESSAGE",
+      payload: {
+        commentId: +prop.idComment,
+        chatId: chatId,
+      },
+    });
+  }, [dispatch, prop.idComment, chatId]);
 
   return (
     <CommentBlockStyle>

@@ -1,20 +1,21 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useMenuContext } from "../providers/MenuModalProvider";
 
 import moreIcon from "../assets/images/list-more-img.svg";
 import settingsIcon from "../assets/images/settings-icon.svg";
 import treadsIcon from "../assets/images/treads-icon.svg";
 import avatar from "../assets/images/user-avatar.jpg";
-import { checkOnline } from "./GlobalElements";
+import { OnlineStatus, OfflineStatus } from "./GlobalElements";
 
 const NavigationFriends = () => {
   const allChats = useSelector((state) => state.chatUsers);
   const dispatch = useDispatch();
-  console.log(allChats);
+  const { chatId } = useLocation().state || { chatId: 0 };
+
   const changeChannel = (id) => {
-    console.log(id);
     dispatch({
       type: "CHANGE_CHANNEL",
       payload: {
@@ -22,9 +23,9 @@ const NavigationFriends = () => {
       },
     });
   };
-
+  const { closeMenu } = useMenuContext();
   return (
-    <NavFriendsStyle>
+    <NavFriendsStyle onClick={closeMenu}>
       <NavHeader>
         <ListButon>
           <h2>Nomad List</h2>
@@ -51,14 +52,14 @@ const NavigationFriends = () => {
           {allChats.map((channel, i) => {
             return (
               <li key={i}>
-                {channel.selected ? (
+                {i === chatId ? (
                   <ChannelListButtonActive>
-                    {channel.chatName}
+                    #{channel.chatName}
                   </ChannelListButtonActive>
                 ) : (
                   <Link to="/" state={{ chatId: i }}>
                     <ChannelListButton onClick={() => changeChannel(i)}>
-                      {channel.chatName}
+                      #{channel.chatName}
                     </ChannelListButton>
                   </Link>
                 )}
@@ -88,15 +89,15 @@ const NavigationFriends = () => {
   );
 };
 
-const OnlineStatus = checkOnline();
-
 const NavFriendsStyle = styled.nav`
   color: #919191;
   padding: 34px 25px 15px;
-  height: 100%;
+  height: auto;
   width: 261px;
   background: #25272a;
   opacity: 0.75;
+  position: relative;
+  margin-left: 75px;
 `;
 
 const NavHeader = styled.div`
@@ -173,7 +174,6 @@ const ChannelListButton = styled.button`
   padding: 9px 12px;
   text-overflow: ellipsis;
   overflow: hidden;
-  cursor: auto;
   &:hover {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 5px;
@@ -182,6 +182,7 @@ const ChannelListButton = styled.button`
 `;
 
 const ChannelListButtonActive = styled(ChannelListButton)`
+  cursor: auto;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 5px;
   color: #fff;

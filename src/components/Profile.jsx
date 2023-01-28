@@ -9,17 +9,12 @@ import twitterImg from "../assets/images/twitter-icon.svg";
 import instagramImg from "../assets/images/instagram-icon.svg";
 import loseProfileImg from "../assets/images/close-profile-icon.svg";
 
-import { checkOnline } from "./GlobalElements";
+import { OnlineStatus, OfflineStatus } from "./GlobalElements";
 import { useMemo } from "react";
 
 const Profile = (prop) => {
   const profile = useSelector((state) => state.profile);
   let checkedUser = useMemo(() => users[profile.id], [profile.id]);
-  const OnlineStatus = useMemo(
-    () => checkOnline(checkedUser?.isOnline),
-    [checkedUser]
-  );
-
   const dispatch = useDispatch();
   const closeProfile = () => {
     dispatch({
@@ -37,7 +32,7 @@ const Profile = (prop) => {
       <Content>
         <Name>
           <h2>{checkedUser.username}</h2>
-          <OnlineStatus></OnlineStatus>
+          {checkedUser.isOnline ? <OnlineStatus /> : <OfflineStatus />}
         </Name>
         <Description>{checkedUser.status}</Description>
 
@@ -80,14 +75,15 @@ const Profile = (prop) => {
 
 const Style = styled.nav`
   background: #efefef;
-  opacity: 0.8;
-  height: 100%;
-  width: 200px;
-  position: relative;
+  height: 100vh;
+  width: auto;
+  position: fixed;
+  top: 0;
+  right: 0;
 `;
 
 const Image = styled.div`
-  width: 200px;
+  width: 100%;
   height: 200px;
   position: relative;
   img {

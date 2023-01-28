@@ -2,6 +2,7 @@ let pathToImages = "../assets/images";
 
 let users = {
   1: {
+    userId: 1,
     username: "Jeshua Stout",
     avatar: `${pathToImages}/user-avatar.jpg`,
     isOnline: true,
@@ -16,6 +17,7 @@ let users = {
     skype: "amiluna",
   },
   2: {
+    userId: 2,
     username: "Harold Adams",
     avatar: `${pathToImages}/user-avatar.jpg`,
     isOnline: false,
@@ -26,6 +28,7 @@ let users = {
     skype: "amiluna123",
   },
   3: {
+    userId: 3,
     username: "user",
     avatar: `${pathToImages}/user-avatar.jpg`,
     isOnline: true,
@@ -36,6 +39,7 @@ let users = {
     skype: "qwertyqwerty",
   },
   4: {
+    userId: 4,
     username: "qwerty",
     avatar: `${pathToImages}/user-avatar.jpg`,
     isOnline: true,

@@ -1,14 +1,18 @@
 import React, { useCallback, useEffect } from "react";
 import styled from "@emotion/styled";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { useMenuContext } from "../providers/MenuModalProvider";
 
 import attach from "../assets/images/attach-icon.svg";
 import microphone from "../assets/images/microphone-icon.svg";
 import smile from "../assets/images/smile-icon.svg";
 
 export default function Footer(prop) {
+  const { closeMenu } = useMenuContext();
   const dispatch = useDispatch();
   const messages = useSelector((state) => state.message);
+  const { chatId } = useLocation().state || { chatId: 0 };
 
   const setTime = useCallback(() => {
     let currentDate = new Date();
@@ -27,7 +31,7 @@ export default function Footer(prop) {
 
   const addMessage = useCallback(
     (event) => {
-      if (event.key === "Enter" && !event.shiftKey) {
+      if (event.key === "Enter" && !event.shiftKey && event.target.value) {
         let comment = event.target.value;
         let messageKey = event.target.messageKey;
         let time = setTime();
@@ -41,16 +45,17 @@ export default function Footer(prop) {
             commentTime: time,
             comment: comment,
             key: messageKey,
+            chatId: chatId,
           },
         });
       }
     },
-    [dispatch, setTime, setDate]
+    [dispatch, setTime, setDate, chatId]
   );
 
   useEffect(() => {
     let messageKey;
-    let stateForEdit = messages.filter((obj, index) => {
+    let stateForEdit = messages[chatId]?.filter((obj, index) => {
       if (obj.currentMessageEdit) {
         messageKey = index;
         return obj.currentMessageEdit;
@@ -62,10 +67,10 @@ export default function Footer(prop) {
       commentTextarea.value = stateForEdit.currentMessageEdit;
       commentTextarea.messageKey = messageKey;
     }
-  }, [messages]);
+  }, [messages, chatId]);
 
   return (
-    <FooterStyle>
+    <FooterStyle onClick={closeMenu}>
       <FooterButton>
         <img src={attach} alt="attach" />
       </FooterButton>
@@ -111,8 +116,17 @@ const MessageForm = styled.form`
   textarea {
     width: 100%;
     resize: none;
-    height: 15px;
     margin-right: 20px;
+    max-height: 40px;
+    position: relative;
+	 &:focus{
+		&::placeholder{
+			opacity: 0;
+		}
+	 }
+    &::placeholder {
+		transform: translateY(50%);
+	}
   }
 `;
 
