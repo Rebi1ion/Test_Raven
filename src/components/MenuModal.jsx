@@ -2,6 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { Link } from "react-router-dom";
 import { useMenuContext } from "../providers/MenuModalProvider";
+import { useDispatch } from "react-redux";
 
 export default function MenuModal({ chatId, selectedChat }) {
   const { active, closeMenu } = useMenuContext();
@@ -17,6 +18,14 @@ export default function MenuModal({ chatId, selectedChat }) {
     border-radius: 7px;
     text-align: center;
   `;
+  const dispatch = useDispatch();
+
+  const leaveChannel = () => {
+    dispatch({
+      type: "LEAVE_CHANNEL",
+      payload: chatId,
+    });
+  };
 
   if (!active) return null;
 
@@ -31,7 +40,11 @@ export default function MenuModal({ chatId, selectedChat }) {
           </li>
         ) : null}
 
-        <li>Выйти из чата</li>
+        <li onClick={leaveChannel}>
+          <Link to={"/"} state={{ chatId: chatId ? chatId - 1 : 0 }}>
+            Выйти из чата
+          </Link>
+        </li>
       </MenuList>
     </ModalWrapper>
   );
@@ -48,7 +61,9 @@ const MenuList = styled.ul`
     }
     &:last-child {
       margin-bottom: 0px;
-      color: #e60b00;
+      a {
+        color: #e60b00;
+      }
     }
   }
 `;

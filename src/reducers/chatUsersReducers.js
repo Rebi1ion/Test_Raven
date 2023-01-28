@@ -12,8 +12,11 @@ const chatUsersReducer = (state = chatUsersState, action) => {
           ? { ...item, isFavorite: action.payload.isFavorite }
           : item;
       });
+
     case "ADD_CHANNEL":
       return [...state, action.payload];
+    case "LEAVE_CHANNEL":
+      return state.filter((_, i) => i !== action.payload);
 
     case "EDIT_CHANNELNAME":
       return state.map((item, i) => {

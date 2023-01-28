@@ -12,6 +12,14 @@ const Chat = () => {
   const allChats = useSelector((state) => state.chatUsers);
   const { chatId } = useLocation().state || { chatId: 0 };
   const selectedChat = allChats[chatId];
+  console.log(selectedChat);
+  if (!selectedChat)
+    return (
+      <NoChatMessage>
+        <p>У вас нет доступных чатов</p>
+        <p>Создайте же скорее его!</p>
+      </NoChatMessage>
+    );
   return (
     <ChatStyle>
       <Header
@@ -35,4 +43,19 @@ const ChatStyle = styled.section`
   display: flex;
   flex-direction: column;
   position: relative;
+`;
+
+const NoChatMessage = styled.h1`
+  flex-grow: 1;
+  height: auto;
+  text-align: center;
+  font-size: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  p {
+    margin-bottom: 20px;
+  }
 `;
