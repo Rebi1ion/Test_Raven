@@ -4,30 +4,55 @@ import styled from "@emotion/styled";
 import emotionReset from "emotion-reset";
 import { Routes, Route, useLocation } from "react-router-dom";
 import MenuModalProvider from "./providers/MenuModalProvider";
+import { QueryClientProvider, QueryClient } from "react-query";
 
 import NavigationChats from "./components/NavigationChats";
 import NavigationFriends from "./components/NavigationFriends";
 import Chat from "./components/Chat";
 import Profile from "./components/Profile";
+import ChannelPanel from "./components/ChannelPanel";
 import ChatPanel from "./components/ChatPanel";
 import AddChatPanel from "./components/AddChatPanel";
 
 function App() {
   const { chatId } = useLocation().state || { chatId: 0 };
+  const channelId = useLocation().state?.channelId || 1;
+  const currentUserId = useLocation().state?.currentUserId || 3;
+
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
+
   return (
-    <MenuModalProvider>
-      <AppClass>
-        <Global styles={minify} />
-        <NavigationChats />
-        <NavigationFriends />
-        <Routes>
-          <Route path="/" element={<Chat chatId={chatId} />}></Route>
-          <Route path="/admin-panel" element={<ChatPanel />}></Route>
-          <Route path="/add-chat-panel" element={<AddChatPanel />}></Route>
-        </Routes>
-        <Profile />
-      </AppClass>
-    </MenuModalProvider>
+    <QueryClientProvider client={queryClient}>
+      <MenuModalProvider>
+        <AppClass>
+          <Global styles={minify} />
+          <NavigationChats />
+          <NavigationFriends />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Chat
+                  chatId={chatId}
+                  channelId={channelId}
+                  userId={currentUserId}
+                />
+              }
+            ></Route>
+            <Route path="/admin-panel" element={<ChannelPanel />}></Route>
+            <Route path="/admin-chat-panel" element={<ChatPanel />}></Route>
+            <Route path="/add-chat-panel" element={<AddChatPanel />}></Route>
+          </Routes>
+          <Profile />
+        </AppClass>
+      </MenuModalProvider>
+    </QueryClientProvider>
   );
 }
 

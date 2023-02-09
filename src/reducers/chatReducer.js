@@ -57,7 +57,6 @@ const chatReducer = (state = chatState, action) => {
         ...state,
         [chatId]: [],
       };
-
     default:
       return state;
   }

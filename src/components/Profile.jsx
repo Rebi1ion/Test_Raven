@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { useDispatch, useSelector } from "react-redux";
-import users from "../states/userState";
 
 import avatar from "../assets/images/user-avatar.jpg";
 import facebookImg from "../assets/images/facebook-icon.svg";
@@ -9,18 +8,31 @@ import twitterImg from "../assets/images/twitter-icon.svg";
 import instagramImg from "../assets/images/instagram-icon.svg";
 import loseProfileImg from "../assets/images/close-profile-icon.svg";
 
-import { OnlineStatus, OfflineStatus } from "./GlobalElements";
-import { useMemo } from "react";
+import OnlineStatus from "./GlobalComponents/OnlineStatus";
+import OfflineStatus from "./GlobalComponents/OfflineStatus";
 
-const Profile = (prop) => {
+import axios from "axios";
+import { BASE_URL } from "../app/services/channel.service";
+
+const Profile = () => {
   const profile = useSelector((state) => state.profile);
-  let checkedUser = useMemo(() => users[profile.id], [profile.id]);
+  const [checkedUser, setCheckedUser] = useState([]);
+
+  useEffect(() => {
+    axios.defaults.baseURL = BASE_URL;
+    profile.id &&
+      axios
+        .get(`/users/${profile.id}`)
+        .then((response) => {
+          setCheckedUser(response.data);
+        });
+  }, [profile]);
   const dispatch = useDispatch();
-  const closeProfile = () => {
+  const closeProfile = useCallback(() => {
     dispatch({
       type: "CLOSE_PROFILE",
     });
-  };
+  }, [dispatch]);
 
   if (!profile.visible) return null;
 
@@ -31,19 +43,19 @@ const Profile = (prop) => {
       </Image>
       <Content>
         <Name>
-          <h2>{checkedUser.username}</h2>
-          {checkedUser.isOnline ? <OnlineStatus /> : <OfflineStatus />}
+          <h2>{checkedUser?.username}</h2>
+          {checkedUser?.isOnline ? <OnlineStatus /> : <OfflineStatus />}
         </Name>
-        <Description>{checkedUser.status}</Description>
+        <Description>{checkedUser?.status}</Description>
 
         <Links>
-          <a href={checkedUser.socialLinks.facebook}>
+          <a href={checkedUser?.socialLinks?.facebook}>
             <img src={facebookImg} alt="" />
           </a>
-          <a href={checkedUser.socialLinks.twitter}>
+          <a href={checkedUser.socialLinks?.twitter}>
             <img src={twitterImg} alt="" />
           </a>
-          <a href={checkedUser.socialLinks.instagram}>
+          <a href={checkedUser.socialLinks?.instagram}>
             <img src={instagramImg} alt="" />
           </a>
         </Links>

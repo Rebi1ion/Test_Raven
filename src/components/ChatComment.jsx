@@ -4,10 +4,22 @@ import styled from "@emotion/styled";
 import { useDispatch } from "react-redux";
 import { useCallback } from "react";
 import { useLocation } from "react-router-dom";
+import { useMutation, useQueryClient } from "react-query";
+import { ChannelService } from "../app/services/channel.service";
 
 const ChatComment = (prop) => {
   const dispatch = useDispatch();
   let { chatId } = useLocation().state || 0;
+  const { userId } = useLocation().state || { userId: 3 };
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation(
+    "delete message",
+    (id) => ChannelService.deleteMessage(id),
+    {
+      onSuccess: () =>
+        queryClient.refetchQueries(["get messages"], { active: true }),
+    }
+  );
 
   const openProfile = useCallback(() => {
     dispatch({
@@ -17,27 +29,20 @@ const ChatComment = (prop) => {
       },
     });
   }, [dispatch, prop.userId]);
-
-  const editMessage = () => {
+  const editMessage = useCallback(() => {
     dispatch({
-      type: "EDIT_MESSAGE",
+      type: "TEXTAREA_FORM",
       payload: {
-        key: +prop.idComment,
-        comment: prop.commentMessage,
-        chatId: chatId,
+        commentId: prop.idComment,
+        commentBody: prop.commentMessage,
       },
     });
-  };
+  }, [dispatch, prop.commentMessage, prop.idComment]);
 
-  const deleteMessage = useCallback(() => {
-    dispatch({
-      type: "DELETE_MESSAGE",
-      payload: {
-        commentId: +prop.idComment,
-        chatId: chatId,
-      },
-    });
-  }, [dispatch, prop.idComment, chatId]);
+  const deleteMessage = useCallback(
+    () => mutate(prop.idComment),
+    [prop.idComment, mutate]
+  );
 
   return (
     <CommentBlockStyle>
@@ -58,10 +63,12 @@ const ChatComment = (prop) => {
         </CommentInfoStyle>
         <p>{prop.commentMessage}</p>
       </div>
-      <CommentControlStyle>
-        <EditButtonStyle onClick={editMessage}>edit</EditButtonStyle>
-        <DeleteButtonStyle onClick={deleteMessage}>delete</DeleteButtonStyle>
-      </CommentControlStyle>
+      {prop.userId === userId && (
+        <CommentControlStyle>
+          <EditButtonStyle onClick={editMessage}>edit</EditButtonStyle>
+          <DeleteButtonStyle onClick={deleteMessage}>delete</DeleteButtonStyle>
+        </CommentControlStyle>
+      )}
     </CommentBlockStyle>
   );
 };

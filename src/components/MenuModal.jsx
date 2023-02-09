@@ -1,11 +1,17 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useMenuContext } from "../providers/MenuModalProvider";
-import { useDispatch } from "react-redux";
+import { useQuery, useMutation } from "react-query";
+import { UserService } from "../app/services/user.service";
+import { ChannelService } from "../app/services/channel.service";
 
-export default function MenuModal({ chatId, selectedChat }) {
+export default function MenuModal() {
   const { active, closeMenu } = useMenuContext();
+  const { chatId } = useLocation().state || { chatId: 1 };
+  const { userId } = useLocation().state || { userId: 3 };
+  const channelId = useLocation().state?.channelId || 1;
+
   const ModalWrapper = styled.section`
     position: fixed;
     z-index: 2;
@@ -18,33 +24,81 @@ export default function MenuModal({ chatId, selectedChat }) {
     border-radius: 7px;
     text-align: center;
   `;
-  const dispatch = useDispatch();
 
-  const leaveChannel = () => {
-    dispatch({
-      type: "LEAVE_CHANNEL",
-      payload: chatId,
-    });
-  };
+  const { data: channelData } = useQuery(["get admin user"], () =>
+    UserService.getChannelData(channelId)
+  );
+
+  const { data: allChannels } = useQuery(
+    ["get all channels 3"],
+    ChannelService.getAllChannels
+  );
+
+  const { mutate: mutateLeaveChannel } = useMutation(
+    ["leave channel"],
+    (usersList) => UserService.leaveChannel({ channelId, usersList })
+  );
+
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    setIsAdmin(channelData?.data.adminUsers.includes(userId));
+  }, [userId, channelData]);
+
+  const leaveChannel = useCallback(() => {
+    mutateLeaveChannel(channelData?.data.users.filter((id) => id !== userId));
+    window.location.reload();
+  }, [channelData?.data.users, mutateLeaveChannel, userId]);
+
+  const getFirstUserChannel = useCallback(
+    (user) => {
+      return (
+        allChannels?.data
+          .filter(
+            (channel) =>
+              channel.chatId === chatId &&
+              channel.users.includes(user) &&
+              channel.id !== channelId
+          )
+          ?.sort((a, b) => {
+            return a?.channelName[0]
+              .toLowerCase()
+              .localeCompare(b?.channelName[0].toLowerCase());
+          })[0] || -1
+      );
+    },
+    [allChannels?.data, chatId, channelId]
+  );
 
   if (!active) return null;
 
   return (
     <ModalWrapper onClick={closeMenu}>
       <MenuList>
-        {selectedChat.isAdmin ? (
+        {isAdmin && (
           <li>
-            <Link to={"/admin-panel"} state={{ chatId: chatId }}>
-              Настройки чата
+            <Link
+              to={"/admin-panel"}
+              state={{ channelId: channelId, userId: userId, chatId: chatId }}
+            >
+              Настройки канала
             </Link>
           </li>
-        ) : null}
-
-        <li onClick={leaveChannel}>
-          <Link to={"/"} state={{ chatId: chatId ? chatId - 1 : 0 }}>
-            Выйти из чата
-          </Link>
-        </li>
+        )}
+        {!isAdmin && (
+          <li onClick={leaveChannel}>
+            <Link
+              to={"/"}
+              state={{
+                channelId: getFirstUserChannel(userId).id,
+                userId: userId,
+                chatId: chatId,
+              }}
+              style={{ color: "#e60b00" }}
+            >
+              Покинуть канал
+            </Link>
+          </li>
+        )}
       </MenuList>
     </ModalWrapper>
   );
@@ -61,9 +115,6 @@ const MenuList = styled.ul`
     }
     &:last-child {
       margin-bottom: 0px;
-      a {
-        color: #e60b00;
-      }
     }
   }
 `;

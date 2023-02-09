@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { useMenuContext } from "../providers/MenuModalProvider";
-import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import unfavorite from "../assets/images/unfavorite.svg";
 import favorite from "../assets/images/favorite.png";
@@ -11,20 +11,42 @@ import people from "../assets/images/people.svg";
 import search from "../assets/images/search-icon.svg";
 import bell from "../assets/images/bell-icon.svg";
 import menu from "../assets/images/menu-icon.svg";
+import { UserService } from "../app/services/user.service";
 
 export default function Header(props) {
   const { openMenu, closeMenu } = useMenuContext();
-  const dispatch = useDispatch();
   const { chatId } = useLocation().state || { chatId: 0 };
-  
-  const toggleFavorite = () =>
-    dispatch({
-      type: "TOGGLE_FAVORITE",
-      payload: {
-        channelId: chatId,
-        isFavorite: !props.isFavorite,
-      },
-    });
+  const { userId } = useLocation().state || { userId: 3 };
+  const channelId = useLocation().state?.channelId || 1;
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [newFavoriteUsers, setNewFavoriteUsers] = useState([]);
+  const queryClient = useQueryClient();
+
+  const { data: channelData } = useQuery(["get favorite user"], () =>
+    UserService.getChannelData(channelId)
+  );
+  useEffect(() => {
+    setIsFavorite(channelData?.data.favoriteUsers.includes(userId));
+  }, [userId, channelData]);
+
+  const { mutate: toggleFavorite } = useMutation(
+    ["change favorite user"],
+    () => UserService.changeFavoriteChannel({ channelId, newFavoriteUsers }),
+    {
+      onSuccess: () => queryClient.refetchQueries(["get favorite user"]),
+    }
+  );
+
+  const onFavoriteClick = useCallback(() => {
+    new Promise((resolve) => {
+      setNewFavoriteUsers(
+        isFavorite
+          ? channelData?.data.favoriteUsers.filter((id) => userId !== id)
+          : channelData?.data.favoriteUsers.concat(userId)
+      );
+      resolve();
+    }).then(() => toggleFavorite());
+  }, [channelData?.data.favoriteUsers, isFavorite, toggleFavorite, userId]);
 
   let Notification = styled.button`
     background-color: inherit;
@@ -51,8 +73,8 @@ export default function Header(props) {
     <HeaderStyle>
       <ChatTitle>
         #{props.title}
-        <ChatFavorite onClick={toggleFavorite}>
-          <img src={props.isFavorite ? favorite : unfavorite} alt="favorite" />
+        <ChatFavorite onClick={onFavoriteClick}>
+          <img src={isFavorite ? favorite : unfavorite} alt="favorite" />
         </ChatFavorite>
       </ChatTitle>
       <div

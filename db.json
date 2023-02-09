@@ -1,0 +1,202 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "Jeshua Stout",
+      "avatar": "/user-avatar.jpg",
+      "isOnline": true,
+      "status": "UI Designer",
+      "link": "@Jeshua",
+      "socialLinks": {
+        "facebook": "https://facebook.com",
+        "twitter": "https://twitter.com",
+        "instagram": "https://instagram.com"
+      },
+      "email": "a-luna@gmail.com",
+      "skype": "amiluna"
+    },
+    {
+      "id": 2,
+      "username": "Harold Adams",
+      "avatar": "/user-avatar.jpg",
+      "isOnline": false,
+      "status": "UX Designer",
+      "link": "@Adams",
+      "socialLinks": {
+        "facebook": "https://facebook.com",
+        "twitter": "https://twitter.com",
+        "instagram": "https://instagram.com"
+      },
+      "email": "qwerty@gmail.com",
+      "skype": "amiluna123"
+    },
+    {
+      "id": 3,
+      "username": "user",
+      "avatar": "/user-avatar.jpg",
+      "isOnline": true,
+      "status": "Front",
+      "link": "@qwerty",
+      "socialLinks": {
+        "facebook": "https://facebook.com",
+        "twitter": "https://twitter.com",
+        "instagram": "https://instagram.com"
+      },
+      "email": "qwerty123@gmail.com",
+      "skype": "qwertyqwerty"
+    },
+    {
+      "id": 4,
+      "username": "qwerty",
+      "avatar": "/user-avatar.jpg",
+      "isOnline": true,
+      "status": "Back",
+      "link": "@qwerty754",
+      "socialLinks": {
+        "facebook": "https://facebook.com",
+        "twitter": "https://twitter.com",
+        "instagram": "https://instagram.com"
+      },
+      "email": "qwerty23123@gmail.com",
+      "skype": "qwerty_qwerty"
+    },
+    {
+      "id": 5,
+      "username": "user123",
+      "avatar": "/user-avatar.jpg",
+      "isOnline": false,
+      "status": "Design",
+      "link": "@user123345",
+      "socialLinks": {
+        "facebook": "https://facebook.com",
+        "twitter": "https://twitter.com",
+        "instagram": "https://instagram.com"
+      },
+      "email": "user123@gmail.com",
+      "skype": "user123123"
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "userId": 1,
+      "username": "Jeshua Stout",
+      "channelId": 1,
+      "body": "@pierrhack I did for 6 days in Iceland",
+      "messageTime": "11:28",
+      "messageDate": [
+        "12",
+        "01",
+        "2023"
+      ]
+    },
+    {
+      "id": 2,
+      "userId": 2,
+      "username": "Harold Adams",
+      "channelId": 1,
+      "body": "Which country to visit next? This is a photo with my friends - celebrating in Bali",
+      "messageTime": "12:02",
+      "messageDate": [
+        "13",
+        "01",
+        "2023"
+      ]
+    },
+    {
+      "id": 3,
+      "userId": 4,
+      "username": "qwerty",
+      "channelId": 2,
+      "body": "Which country to visit next? This is a photo with my friends - celebrating in Bali",
+      "messageTime": "12:02",
+      "messageDate": [
+        "13",
+        "01",
+        "2023"
+      ]
+    }
+  ],
+  "chats": [
+    {
+      "id": 1,
+      "chatName": "Main",
+      "bgColor": "rgb(218, 5, 5)",
+      "adminUser": 3,
+      "users": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "chatName": "qwerty",
+      "bgColor": "rgb(229,77,52)",
+      "adminUser": 3,
+      "users": [
+        3,
+        4
+      ],
+      "id": 2
+    },
+    {
+      "chatName": "jacks",
+      "bgColor": "rgb(165,183,90)",
+      "adminUser": 1,
+      "users": [
+        1
+      ],
+      "id": 3
+    }
+  ],
+  "channels": [
+    {
+      "id": 1,
+      "chatId": 1,
+      "channelName": "general",
+      "users": [
+        2,
+        3
+      ],
+      "adminUsers": [
+        3
+      ],
+      "favoriteUsers": [
+        2
+      ]
+    },
+    {
+      "id": 2,
+      "chatId": 1,
+      "channelName": "tests",
+      "users": [
+        3,
+        4
+      ],
+      "adminUsers": [
+        3,
+        4
+      ],
+      "favoriteUsers": [
+        3
+      ],
+      "adminUser": [
+        3
+      ]
+    },
+    {
+      "chatId": 2,
+      "channelName": "general qwerty",
+      "users": [
+        3,
+        4
+      ],
+      "adminUsers": [
+        3
+      ],
+      "favoriteUsers": [],
+      "id": 4
+    }
+  ]
+}

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useCallback, useState, useRef, useEffect } from "react";
 import styled from "@emotion/styled";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { useMenuContext } from "../providers/MenuModalProvider";
 
@@ -8,96 +8,239 @@ import moreIcon from "../assets/images/list-more-img.svg";
 import settingsIcon from "../assets/images/settings-icon.svg";
 import treadsIcon from "../assets/images/treads-icon.svg";
 import avatar from "../assets/images/user-avatar.jpg";
-import { OnlineStatus, OfflineStatus } from "./GlobalElements";
+import OnlineStatus from "./GlobalComponents/OnlineStatus";
+import OfflineStatus from "./GlobalComponents/OfflineStatus";
+import { useQuery } from "react-query";
+import { ChatService } from "../app/services/chat.service";
+import { ChannelService } from "../app/services/channel.service";
 
 const NavigationFriends = () => {
-  const allChats = useSelector((state) => state.chatUsers);
   const dispatch = useDispatch();
-  const { chatId } = useLocation().state || { chatId: 0 };
+  const { chatId } = useLocation().state || { chatId: 1 };
+  const { userId } = useLocation().state || { userId: 3 };
+  const channelId = useLocation().state?.channelId || 1;
+  const [users, setUsers] = useState([]);
+  const [channels, setChannels] = useState([]);
 
-  const changeChannel = (id) => {
-    dispatch({
-      type: "CHANGE_CHANNEL",
-      payload: {
-        channelId: id,
-      },
-    });
-  };
+  const changeChannel = useCallback(
+    (id) => {
+      dispatch({
+        type: "CHANGE_CHANNEL",
+        payload: {
+          channelId: id,
+        },
+      });
+    },
+    [dispatch]
+  );
+
+  const { data: allChannels } = useQuery(
+    ["get all channels 2"],
+    ChannelService.getAllChannels
+  );
+  const { data: dataBase } = useQuery(["get db"], ChannelService.getDataBase);
+
+  useEffect(() => {
+    if (dataBase?.data) {
+      let responseChannels = dataBase?.data.channels;
+      let chatsChannels = responseChannels?.filter(
+        (channel) =>
+          channel.chatId === chatId && channel.users?.includes(userId)
+      );
+
+      let chatUsers = dataBase?.data.users
+        .filter((user) =>
+          dataBase?.data.chats
+            .find((chat) => chat.id === chatId)
+            .users.includes(user.id)
+        )
+        .sort((a, b) => {
+          return a.username[0]
+            .toLowerCase()
+            .localeCompare(b.username[0].toLowerCase());
+        });
+
+      setChannels(
+        chatsChannels.sort((a, b) => {
+          return a.channelName[0]
+            .toLowerCase()
+            .localeCompare(b.channelName[0].toLowerCase());
+        })
+      );
+      setUsers(chatUsers);
+    }
+  }, [chatId, userId, allChannels, dataBase]);
+
+  const { data: chatData } = useQuery(["get chat data"], () =>
+    ChatService.getChatById(chatId)
+  );
+
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    setIsAdmin(chatData?.data.adminUser === userId);
+  }, [userId, chatData?.data]);
+
+  const arrow = useRef(null);
+  const sectionsList = useRef(null);
+
+  const [activeList, setActiveList] = useState(true);
+
+  const toggleList = useCallback(() => {
+    arrow.current.style.transform = `rotate(${activeList ? "0" : "-180"}deg)`;
+    sectionsList.current.style.transform = `scaleY(${activeList ? "0" : "1"})`;
+    setActiveList(!activeList);
+  }, [activeList]);
+
+  const getFirstUserChannel = useCallback(
+    (user) => {
+      return (
+        allChannels?.data
+          .filter(
+            (channel) =>
+              channel.chatId === chatId && channel.users.includes(user.id)
+          )
+          ?.sort((a, b) => {
+            return a?.channelName[0]
+              .toLowerCase()
+              .localeCompare(b?.channelName[0].toLowerCase());
+          })[0] || -1
+      );
+    },
+    [allChannels?.data, chatId]
+  );
+
   const { closeMenu } = useMenuContext();
   return (
     <NavFriendsStyle onClick={closeMenu}>
       <NavHeader>
-        <ListButon>
+        <ListButon onClick={toggleList}>
           <h2>Nomad List</h2>
-          <span>
+          <Arrow ref={arrow}>
             <img src={moreIcon} alt="moreIcon" />
-          </span>
+          </Arrow>
         </ListButon>
-        <SettingsButton>
-          <img src={settingsIcon} alt="settingsIcon" />
-        </SettingsButton>
+        {isAdmin && (
+          <Link
+            to="/admin-chat-panel"
+            state={{ userId: userId, chatId: chatId, channelId: channelId }}
+          >
+            <SettingsButton>
+              <img src={settingsIcon} alt="settingsIcon" />
+            </SettingsButton>
+          </Link>
+        )}
       </NavHeader>
 
-      <AllTreads>
-        <img src={treadsIcon} alt="treads" />
-        <h3>All treads</h3>
-      </AllTreads>
+      <SectionsWrapper ref={sectionsList}>
+        <AllTreads>
+          <img src={treadsIcon} alt="treads" />
+          <h3>All treads</h3>
+        </AllTreads>
 
-      <section>
-        <SectionTitle>
-          <h3>CHANNELS</h3>
-          <span>{allChats.length}</span>
-        </SectionTitle>
-        <ChannelList>
-          {allChats.map((channel, i) => {
-            return (
-              <li key={i}>
-                {i === chatId ? (
-                  <ChannelListButtonActive>
-                    #{channel.chatName}
-                  </ChannelListButtonActive>
-                ) : (
-                  <Link to="/" state={{ chatId: i }}>
-                    <ChannelListButton onClick={() => changeChannel(i)}>
-                      #{channel.chatName}
-                    </ChannelListButton>
+        <section>
+          <SectionTitle>
+            <h3>CHANNELS</h3>
+            <span>{channels.length}</span>
+          </SectionTitle>
+          <ChannelList>
+            {channels.map((channel, i) => {
+              return (
+                <li
+                  key={i}
+                  onClick={() =>
+                    dispatch({ type: "RELOAD_PAGE", payload: true })
+                  }
+                >
+                  {channel.id === channelId ? (
+                    <ChannelListButtonActive disabled={true}>
+                      #{channel.channelName}
+                    </ChannelListButtonActive>
+                  ) : (
+                    <Link
+                      to="/"
+                      state={{
+                        chatId: chatId,
+                        channelId: channel.id,
+                        userId: userId,
+                      }}
+                    >
+                      <ChannelListButton
+                        onClick={() => changeChannel(channel.id)}
+                      >
+                        #{channel.channelName}
+                      </ChannelListButton>
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ChannelList>
+        </section>
+
+        <section>
+          <FriendSectionTitle>
+            <h3>CHAT USERS</h3>
+            <span>{users.length}</span>
+          </FriendSectionTitle>
+
+          <FriendsList>
+            {users.map((user, i) => {
+              return (
+                <li
+                  key={i}
+                  onClick={() =>
+                    dispatch({ type: "RELOAD_PAGE", payload: true })
+                  }
+                >
+                  <Link
+                    to={"/"}
+                    state={{
+                      chatId: chatId,
+                      userId: user.id,
+                      channelId: getFirstUserChannel(user).id,
+                    }}
+                  >
+                    <FriendsListButton>
+                      {user.isOnline ? (
+                        <OnlineStatus></OnlineStatus>
+                      ) : (
+                        <OfflineStatus></OfflineStatus>
+                      )}
+
+                      <FriendsAvatar>
+                        <img src={avatar} alt="avatar" />
+                      </FriendsAvatar>
+                      <h3>{user.username}</h3>
+                    </FriendsListButton>
                   </Link>
-                )}
-              </li>
-            );
-          })}
-        </ChannelList>
-      </section>
-
-      <section>
-        <FriendSectionTitle>
-          <h3>FRIENDS</h3>
-          <span>3</span>
-        </FriendSectionTitle>
-
-        <FriendsList>
-          <li>
-            <OnlineStatus></OnlineStatus>
-            <FriendsAvatar>
-              <img src={avatar} alt="avatar" />
-            </FriendsAvatar>
-            <h3>Jeshua Stout</h3>
-          </li>
-        </FriendsList>
-      </section>
+                </li>
+              );
+            })}
+          </FriendsList>
+        </section>
+      </SectionsWrapper>
     </NavFriendsStyle>
   );
 };
 
+const SectionsWrapper = styled.div`
+  transform: scaleY(1);
+  clip: rect(auto, auto, 0, auto);
+  transform-origin: top;
+  overflow-y: hidden;
+  transition: 0.3s linear;
+`;
+
 const NavFriendsStyle = styled.nav`
   color: #919191;
   padding: 34px 25px 15px;
-  height: auto;
+  height: 100vh;
   width: 261px;
-  background: #25272a;
-  opacity: 0.75;
-  position: relative;
+  background: rgba(37, 39, 42, 0.75);
+  position: fixed;
   margin-left: 75px;
+  z-index: 2;
+  overflow-y: auto;
 `;
 
 const NavHeader = styled.div`
@@ -119,13 +262,16 @@ const ListButon = styled.button`
     line-height: 1.2;
     margin-right: 5px;
   }
-  span {
-    display: flex;
-    height: 100%;
-    img {
-      height: 11px;
-      width: 15px;
-    }
+`;
+
+const Arrow = styled.span`
+  display: flex;
+  height: 100%;
+  transition: 0.3s ease;
+  transform: rotate(-180deg);
+  img {
+    height: 11px;
+    width: 15px;
   }
 `;
 
@@ -188,13 +334,12 @@ const ChannelListButtonActive = styled(ChannelListButton)`
   color: #fff;
 `;
 
-const FriendsList = styled.button`
+const FriendsList = styled.ul`
   width: 100%;
   background: inherit;
   li {
     margin-bottom: 10px;
-    display: flex;
-    align-items: center;
+
     h3 {
       width: 100%;
       text-align: left;
@@ -205,6 +350,12 @@ const FriendsList = styled.button`
       white-space: nowrap;
     }
   }
+`;
+
+const FriendsListButton = styled.button`
+  background: inherit;
+  display: flex;
+  align-items: center;
 `;
 
 const FriendsAvatar = styled.div`

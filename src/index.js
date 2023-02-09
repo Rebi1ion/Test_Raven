@@ -7,6 +7,8 @@ import { configureStore } from "@reduxjs/toolkit";
 import messageReducer from "./reducers/chatReducer";
 import profileReducer from "./reducers/profileReducer";
 import chatUsersReducer from "./reducers/chatUsersReducers";
+import textareaReducer from "./reducers/textareaReducer";
+import reloadMutationReducer from "./reducers/reloadAfterMuation";
 
 import { BrowserRouter } from "react-router-dom";
 
@@ -16,6 +18,8 @@ const rootReducers = combineReducers({
   message: messageReducer,
   profile: profileReducer,
   chatUsers: chatUsersReducer,
+  textarea: textareaReducer,
+  reload: reloadMutationReducer
 });
 
 const store = configureStore({ reducer: rootReducers });

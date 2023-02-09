@@ -1,55 +1,56 @@
-import React, { useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import users from "../states/userState";
+import React, { useRef, useCallback } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import {
-  BackButton,
-  Panel,
-  TitlePanel,
-  PanelInput,
-  PanelForm,
-  PanelButton,
-  Error,
-} from "./GlobalElements";
+import { chatSchema } from "../validation/chatNameValidation";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useMutation } from "react-query";
+
+import BackButton from "./GlobalComponents/BackButton";
+import Panel from "./GlobalComponents/Panel";
+import TitlePanel from "./GlobalComponents/TitlePanel";
+import PanelInput from "./GlobalComponents/PanelInput";
+import PanelForm from "./GlobalComponents/PanelForm";
+import PanelButton from "./GlobalComponents/PanelButton";
+import Error from "./GlobalComponents/Error";
+import { ChatService } from "../app/services/chat.service";
 
 export default function AddChatPanel() {
   const addForm = useRef();
   const navigate = useNavigate();
   const goBack = () => navigate(-1);
-  const allChats = useSelector((state) => state.chatUsers);
+  const { userId } = useLocation().state || { userId: 3 };
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ mode: "onBlur" });
+  } = useForm({ mode: "onBlur", resolver: yupResolver(chatSchema) });
 
-  const dispatch = useDispatch();
+  const { mutate: mutateNewChat } = useMutation(["add new chat"], (chatData) =>
+    ChatService.addNewChat(chatData)
+  );
 
-  const randomColor = () => {
+  const randomColor = useCallback(() => {
     let result = [];
     for (let i = 0; i <= 2; i++) result.push(Math.floor(Math.random() * 255));
     return `rgb(${result})`;
-  };
-  const addNewChannel = ({ chatName }) => {
-    const chatNameInput = addForm.current.querySelector("[name='chatName']");
-    chatNameInput.value = "";
-    dispatch({
-      type: "ADD_CHANNEL",
-      payload: {
+  }, []);
+
+  const addNewChannel = useCallback(
+    ({ chatName }) => {
+      console.log(chatName);
+      const chatNameInput = addForm.current.querySelector("[name='chatName']");
+      chatNameInput.value = "";
+      mutateNewChat({
         chatName: chatName,
-        users: [users[3]],
-        selected: false,
-        isFavorite: false,
-        isAdmin: true,
         bgColor: randomColor(),
-      },
-    });
-    dispatch({
-      type: "NEW_CHAT",
-      payload: { chatId: allChats.length },
-    });
-  };
+        adminUser: userId,
+        users: [userId],
+      });
+      window.location.reload();
+    },
+    [randomColor, mutateNewChat, userId]
+  );
 
   return (
     <Panel>
@@ -59,17 +60,7 @@ export default function AddChatPanel() {
         <label>
           Название чата*
           <PanelInput
-            {...register("chatName", {
-              required: "Это поле обязательно для ввода",
-              minLength: {
-                message: "Минимальное количество символов 5",
-                value: 5,
-              },
-              maxLength: {
-                message: "Максимальное количество символов 25",
-                value: 25,
-              },
-            })}
+            {...register("chatName")}
             placeholder="Введите название"
           ></PanelInput>
         </label>
