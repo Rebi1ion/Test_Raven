@@ -115,6 +115,32 @@
         "01",
         "2023"
       ]
+    },
+    {
+      "userId": 1,
+      "username": "Jeshua Stout",
+      "channelId": 1,
+      "body": "asdfasdf",
+      "messageTime": "19:02",
+      "messageDate": [
+        "22",
+        "02",
+        "2023"
+      ],
+      "id": 4
+    },
+    {
+      "userId": 3,
+      "username": "user",
+      "channelId": 1,
+      "body": "asdfasd",
+      "messageTime": "19:02",
+      "messageDate": [
+        "22",
+        "02",
+        "2023"
+      ],
+      "id": 5
     }
   ],
   "chats": [
@@ -157,7 +183,8 @@
       "channelName": "general",
       "users": [
         2,
-        3
+        3,
+        1
       ],
       "adminUsers": [
         3
@@ -189,8 +216,7 @@
       "chatId": 2,
       "channelName": "general qwerty",
       "users": [
-        3,
-        4
+        3
       ],
       "adminUsers": [
         3
